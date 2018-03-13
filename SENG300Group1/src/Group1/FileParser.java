@@ -34,20 +34,37 @@ public class FileParser {
 			filePath = fi.getAbsolutePath();
 			if (fi.isFile()) {
 				parseIt(fileToString(path));
+			}else {
+				throw new IOException();
 			}
 		}
 		
 		
 	}
 
-	private void parseIt(Object fileToString) {
+	private void parseIt(String path) {
 		// TODO Auto-generated method stub
-		
+		ASTParser parser = ASTParser.newParser(AST.JLS9);					//Creating the AST with the given string.
+		parser.setSource(path.toCharArray());
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		parser.setResolveBindings(true);
 	}
 
-	private String fileToString(String path2) throws IOException{
+	private String fileToString(String filePathToString) throws IOException{
 		// TODO Auto-generated method stub
-		return null;
+		StringBuilder inFile = new StringBuilder();							//Opening the file to read it
+		BufferedReader reader = new BufferedReader(new FileReader(filePathToString));
+		
+		char[] ch = new char[10];
+		int num = 0;
+		
+		while ((num = reader.read(ch)) != -1) {
+			String readData = String.valueOf(ch, 0, num);
+			inFile.append(readData);
+			ch = new char[1024];
+		}
+		reader.close();
+		return inFile.toString();
 	}
 
 	public int getRef() {
