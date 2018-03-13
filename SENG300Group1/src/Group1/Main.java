@@ -40,8 +40,8 @@ public class Main {
 		}catch (IOException e){
 			System.out.println("Parsing Error!");
 		}
-		System.out.println(type + ". Declarations found: " + parser.getDeclarations() + 
-				"; References found: " + parser.getReferences() + ".");
+		System.out.println(type + ". Declarations found: " + parser.getDec() + 
+				"; References found: " + parser.getRef() + ".");
 		}
 	}
 
