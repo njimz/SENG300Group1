@@ -11,7 +11,7 @@ public class Main {
 		String pathName = "";
 		String type = "";
 		
-		try {
+		try { // check if user gives 2 arguments
 			pathName = args[0];
 			type = args[1];
 			/*
@@ -25,7 +25,9 @@ public class Main {
 				System.out.println("ERROR: Invalid Java type!");
 				System.exit(0);
 			}*/
-		}catch (java.lang.ArrayIndexOutOfBoundsException e){
+		}
+		//throws out of bounds exception if user does not input 2 arguments
+		catch (java.lang.ArrayIndexOutOfBoundsException e){ 
 			System.out.println("INVALID ENTRY!");
 			Scanner reader = new Scanner(System.in);
 			System.out.println("Enter a path: ");
@@ -33,19 +35,22 @@ public class Main {
 			System.out.println("Enter a java type: ");
 			type = reader.next();
 			reader.close();
+			
+			// program ends if user does not input any type
 			if (type.length()==0) {
-				System.out.println("ERROR: Invalid Java type!");
-				System.exit(0);
+				System.out.println("Did not enter a Java type!");
+				//System.exit(0);
 			}
 		}
-		ProcessFile parser = new ProcessFile(pathName, type);
+		ProcessFile fileToProcess = new ProcessFile(pathName, type.toLowerCase());
 		try {
-			parser.parseFile();
+			fileToProcess.parseFile();
 		}catch (IOException e){
 			System.out.println("Parsing Error!");
+			//System.exit(0);
 		}
-		System.out.println(type + ". Declarations found: " + parser.getDec() + 
-				"; References found: " + parser.getRef() + ".");
+		System.out.println(type + ". Declarations found: " + fileToProcess.getDec() + 
+				"; References found: " + fileToProcess.getRef() + ".");
 		}
 	}
 
