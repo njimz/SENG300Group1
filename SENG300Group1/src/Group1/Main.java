@@ -12,6 +12,9 @@ public class Main {
 		String type = "";
 		
 		try {
+			pathName = args[0];
+			type = args[1];
+			/*
 			Scanner reader = new Scanner(System.in);
 			System.out.println("Enter a path: ");
 			pathName = reader.next();
@@ -21,8 +24,9 @@ public class Main {
 			if (type.length()==0) {
 				System.out.println("ERROR: Invalid Java type!");
 				System.exit(0);
-			}
+			}*/
 		}catch (java.lang.ArrayIndexOutOfBoundsException e){
+			System.out.println("INVALID ENTRY!");
 			Scanner reader = new Scanner(System.in);
 			System.out.println("Enter a path: ");
 			pathName = reader.next();
