@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Type;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -140,13 +141,16 @@ public class ProcessFile {
 
 	private void countAnnotRef(ASTNode node) {
 		// TODO Auto-generated method stub
-		
+		Types type = new Types();
+		node.accept(type);
+		references = type.getAnnotRef();
 	}
 
 	private void countAnnotDec(ASTNode node) {
 		// TODO Auto-generated method stub
-		int num = 0;
-		
+		Types type = new Types();
+		node.accept(type);
+		references = type.getAnnotDec();
 		
 	}
 
