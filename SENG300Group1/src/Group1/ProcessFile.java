@@ -1,6 +1,7 @@
 package Group1;
 
 import java.io.BufferedReader;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -69,7 +70,10 @@ public class ProcessFile {
 		for (File fi : file) { //loop through file
 			filePath = fi.getAbsolutePath();
 			if (fi.isFile()) {
-				parseIt(fileToString(path));
+				Parser parser = new Parser();
+				parser.parseIt(fileToString(path),getType());
+				declarations = parser.getDec();
+				references = parser.getRef();
 			}else {
 				throw new IOException();
 			}
@@ -77,7 +81,11 @@ public class ProcessFile {
 		
 		
 	}
-
+	
+	public String getType() {
+		return type;
+	}
+/*
 	private void parseIt(String path) {
 		// TODO Auto-generated method stub
 		/*
@@ -104,8 +112,8 @@ public class ProcessFile {
 		default: // if not valid type, program ends
 			System.out.println("Invalid Type!");
 			System.exit(0);
-		}*/
-		
+		}
+///////////////////////////////////////////////////////////////////////////////////////////////////////		
 		Map map = JavaCore.getOptions();
 		map.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_5);
 		map.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_5);
@@ -115,7 +123,7 @@ public class ProcessFile {
 		  
 
 		  
-			ASTParser parser = ASTParser.newParser(AST.JLS3);
+			ASTParser parser = ASTParser.newParser(AST.JLS8);
 			parser.setCompilerOptions(map);
 			parser.setSource(path.toCharArray());
 			parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -222,7 +230,7 @@ public class ProcessFile {
 		
 		
 	}
-/*
+///////////////////////////////////////////////////////////////////////////////////////////
 	private void doInterface(ASTNode node) {
 		// TODO Auto-generated method stub
 		countIntDec(node);
@@ -323,3 +331,4 @@ public class ProcessFile {
 	}
 	
 }
+
