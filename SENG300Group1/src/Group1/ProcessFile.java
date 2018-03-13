@@ -120,7 +120,7 @@ public class ProcessFile {
 			parser.setSource(path.toCharArray());
 			parser.setKind(ASTParser.K_COMPILATION_UNIT);
 			parser.setResolveBindings(true);
-			//parser.setEnvironment(null, null, null, true);
+			parser.setEnvironment(null, null, null, true);
 			parser.setUnitName("doesThisMatter.java");
 			
 
@@ -137,23 +137,16 @@ public class ProcessFile {
 					String name = node.getName().getFullyQualifiedName();
 					
 					if (type.equals(name)) declarations++;
-					//if (DEBUG) System.out.println("Declaration: " +name);
 			
-					
-					
 					if (node.getSuperclassType() != null) {
-						if (type.equals(node.getSuperclassType().toString())) references++;
-						//if (DEBUG) System.out.println("This class extends " + node.getSuperclassType());
-						
+						if (type.equals(node.getSuperclassType().toString())) references++;						
 					}
 					
 					ITypeBinding nodeBinding = node.resolveBinding();
 					if (nodeBinding.getInterfaces() != null) {
 						ITypeBinding[] interfaces = nodeBinding.getInterfaces();
 						for (ITypeBinding i : interfaces) {
-							if (type.equals(i.getQualifiedName())) references++;
-							//if (DEBUG) System.out.println("implements Reference: " + i.getName());
-							
+							if (type.equals(i.getQualifiedName())) references++;							
 						}
 					}
 					
@@ -167,10 +160,6 @@ public class ProcessFile {
 					
 					String name = node.resolveBinding().getType().getName();
 					if (type.equals(name)) references++;
-
-					//if (DEBUG) System.out.println("Variable Reference: " + name);
-
-
 					return super.visit(node);
 				}
 				
@@ -181,7 +170,6 @@ public class ProcessFile {
 				
 					for (Object o : node.parameters()) {
 						SingleVariableDeclaration svd = (SingleVariableDeclaration) o;
-						//System.out.println(javaType.equals(svd.getType().toString()));
 						if (type.equals(svd.getType().toString())) references++;
 					}
 					
@@ -197,10 +185,7 @@ public class ProcessFile {
 		
 				public boolean visit(ClassInstanceCreation node) {
 					String name = node.getType().toString();
-					if (type.equals(name)) references++;
-					
-					//if (DEBUG) System.out.println("Reference: " + name);
-	
+					if (type.equals(name)) references++;	
 					return false; // do not continue 
 			}
 				
@@ -209,19 +194,14 @@ public class ProcessFile {
 				
 				public boolean visit(AnnotationTypeDeclaration node) {
 					String name = node.getName().getFullyQualifiedName();
-					if (type.equals(name)) declarations++;
-					
-					//if (DEBUG) System.out.println("Declaration: " + name);
-					
+					if (type.equals(name)) declarations++;					
 					return false; // do not continue 
 				}
 				
 				
 				public boolean visit(EnumDeclaration node) {
 					String name = node.getName().getFullyQualifiedName();
-					if (type.equals(name)) declarations++;
-					//if (DEBUG) System.out.println("Declaration: " + name);
-					
+					if (type.equals(name)) declarations++;					
 					ITypeBinding e = node.resolveBinding();
 					if (e.getInterfaces() != null) {
 						ITypeBinding[] interfaces = e.getInterfaces();
