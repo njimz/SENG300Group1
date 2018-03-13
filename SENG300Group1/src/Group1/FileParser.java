@@ -44,7 +44,7 @@ public class FileParser {
 
 	private void parseIt(String path) {
 		// TODO Auto-generated method stub
-		ASTParser parser = ASTParser.newParser(AST.JLS9);					//Creating the AST with the given string.
+		ASTParser parser = ASTParser.newParser(AST.JLS3);					//Creating the AST with the given string.
 		parser.setSource(path.toCharArray());
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setResolveBindings(true);
