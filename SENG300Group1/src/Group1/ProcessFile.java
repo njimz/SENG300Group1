@@ -139,6 +139,8 @@ public class ProcessFile {
 
 	private void countAnnotDec(ASTNode node) {
 		// TODO Auto-generated method stub
+		int num = 0;
+		
 		
 	}
 
