@@ -1,6 +1,7 @@
 package Group1;
 
 import java.io.BufferedReader;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -9,6 +10,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 
+//import org.eclipse.core.runtime.IProgressMonitor 
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -109,7 +111,11 @@ public class ProcessFile {
 
 	private void countIntDec(ASTNode node) {
 		// TODO Auto-generated method stub
-		
+		// want to instantiate ASTVisistor
+		int num  = 0;
+		ASTVisitor visitor = new ASTVisitor();
+		node.accept(visitor);
+		if (node.is) {}
 	}
 
 	private void countEnumClassRef(ASTNode node) {
