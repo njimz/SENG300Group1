@@ -38,7 +38,7 @@ public class Main {
 				System.exit(0);
 			}
 		}
-		FileParser parser = new FileParser(pathName, type);
+		ProcessFile parser = new ProcessFile(pathName, type);
 		try {
 			parser.parseFile();
 		}catch (IOException e){
