@@ -8,31 +8,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.jdt.core.JavaCore;
-//import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
-
-/*
- * import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.ClassInstanceCreation;
-import org.eclipse.jdt.core.dom.EnumDeclaration;
-import org.eclipse.jdt.core.dom.MarkerAnnotation;
-import org.eclipse.jdt.core.dom.NormalAnnotation;
-
-import javax.swing.ListCellRenderer;
-
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.IJavaProject;
-//import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.dom.*;
- */
-
-//import org.eclipse.core.runtime.IProgressMonitor 
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
