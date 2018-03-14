@@ -193,7 +193,7 @@ public class Parser {
 					references++;				
 				}
 
-				return false; // do not continue 
+				return false;
 			}
 			
 			public boolean visit(AnnotationTypeDeclaration node) {
@@ -207,7 +207,7 @@ public class Parser {
 					declarations++;
 				}
 								
-				return false; // do not continue 
+				return false; 
 			}
 			
 			public boolean visit(EnumDeclaration node) {
@@ -221,7 +221,7 @@ public class Parser {
 					declarations++;
 				}
 								
-				return false; // do not continue 
+				return false;
 			}
 		});
 	}
