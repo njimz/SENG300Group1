@@ -53,7 +53,7 @@ public class ProcessFile {
 	private int declarations = 0;
 	private int references = 0;
 	
-	// FileParserConstructor
+	// ProcessFile Constructor
 	public ProcessFile(String pathName, String type, boolean hasPackage) {
 		this.path = pathName;
 		this.type = type;
@@ -72,10 +72,10 @@ public class ProcessFile {
 		}
 
 		for (File f: files) {
-			String currentFilePath = f.getAbsolutePath();
+			String filePath = f.getAbsolutePath();
 			if (f.isFile()) {
 				Parser parser = new Parser();
-				parser.parseIt(fileToString(currentFilePath), getType(), hasPackage);
+				parser.parseIt(fileToString(filePath), getType(), hasPackage);
 				declarations = parser.getDec();
 				references = parser.getRef();
 			}
