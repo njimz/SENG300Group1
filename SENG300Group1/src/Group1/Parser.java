@@ -62,7 +62,10 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
-
+/**
+* Parser Class, takes the String file Path and String type to recursively go through nodes to 
+* search for occurances of type references and type declarations.
+**/
 public class Parser {
 	private int references = 0;
 	private int declarations = 0;
@@ -72,115 +75,75 @@ public class Parser {
 		map.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_5);
 		map.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_5);
 		map.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_5);
-
-
-		  
-
-		  
-			ASTParser parser = ASTParser.newParser(AST.JLS8);
-			parser.setCompilerOptions(map);
-			parser.setSource(path.toCharArray());
-			parser.setKind(ASTParser.K_COMPILATION_UNIT);
-			parser.setResolveBindings(true);
-			parser.setEnvironment(null, null, null, true);
-			parser.setUnitName("doesThisMatter.java");
-			
-
-			
-			
-			 
-			 
-			final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
-	 
-			cu.accept(new ASTVisitor() {
-	 
-
-				public boolean visit(TypeDeclaration node) {
-					String name = node.getName().getFullyQualifiedName();
-					
-					if (type.equals(name)) declarations++;
-			
-					if (node.getSuperclassType() != null) {
-						if (type.equals(node.getSuperclassType().toString())) references++;						
-					}
-					
-					ITypeBinding nodeBinding = node.resolveBinding();
-					if (nodeBinding.getInterfaces() != null) {
-						ITypeBinding[] interfaces = nodeBinding.getInterfaces();
-						for (ITypeBinding i : interfaces) {
-							if (type.equals(i.getQualifiedName())) references++;							
-						}
-					}
-					
-					return super.visit(node); 
-				}
-				
-
-				
-				
-				public boolean visit(VariableDeclarationFragment node) {
-					
-					String name = node.resolveBinding().getType().getName();
-					if (type.equals(name)) references++;
-					return super.visit(node);
-				}
-				
-				
-
-				
-				public boolean visit(MethodDeclaration node) {
-				
-					for (Object o : node.parameters()) {
-						SingleVariableDeclaration svd = (SingleVariableDeclaration) o;
-						if (type.equals(svd.getType().toString())) references++;
-					}
-					
-					return super.visit(node);
-				}
-				
-				public boolean visit(MethodInvocation node) {
-					
-					
-					return super.visit(node);
-				}
-				
 		
-				public boolean visit(ClassInstanceCreation node) {
-					String name = node.getType().toString();
-					if (type.equals(name)) references++;	
-					return false; // do not continue 
-			}
-				
+		ASTParser parser = ASTParser.newParser(AST.JLS8);
+		parser.setCompilerOptions(map);
+		parser.setSource(path.toCharArray());
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		parser.setResolveBindings(true);
+		parser.setEnvironment(null, null, null, true);
+		parser.setUnitName("doesThisMatter.java");
+		
+		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+	 
+		cu.accept(new ASTVisitor() {
+	 
 
-				
-				
-				public boolean visit(AnnotationTypeDeclaration node) {
-					String name = node.getName().getFullyQualifiedName();
-					if (type.equals(name)) declarations++;					
-					return false; // do not continue 
+			public boolean visit(TypeDeclaration node) {
+				String name = node.getName().getFullyQualifiedName();	
+				if (type.equals(name)) declarations++;
+				if (node.getSuperclassType() != null) {
+					if (type.equals(node.getSuperclassType().toString())) references++;						
 				}
-				
-				
-				public boolean visit(EnumDeclaration node) {
-					String name = node.getName().getFullyQualifiedName();
-					if (type.equals(name)) declarations++;					
-					ITypeBinding e = node.resolveBinding();
-					if (e.getInterfaces() != null) {
-						ITypeBinding[] interfaces = e.getInterfaces();
-						for (ITypeBinding i : interfaces) {
-							if (type.equals(i.getQualifiedName())) references++;
-							//if (DEBUG) System.out.println("Implements Reference: " + i.getName());
-						}
+				ITypeBinding nodeBinding = node.resolveBinding();
+				if (nodeBinding.getInterfaces() != null) {
+					ITypeBinding[] interfaces = nodeBinding.getInterfaces();
+					for (ITypeBinding i : interfaces) {
+						if (type.equals(i.getQualifiedName())) references++;							
 					}
-					
-
-					
-					return false; // do not continue 
 				}
-				
-
-
-			});
+					
+				return super.visit(node); 
+			}	
+			public boolean visit(VariableDeclarationFragment node) {	
+				String name = node.resolveBinding().getType().getName();
+				if (type.equals(name)) references++;
+				return super.visit(node);
+			}	
+			public boolean visit(MethodDeclaration node) {	
+				for (Object o : node.parameters()) {
+					SingleVariableDeclaration svd = (SingleVariableDeclaration) o;
+					if (type.equals(svd.getType().toString())) references++;
+				}
+					
+				return super.visit(node);
+			}
+			public boolean visit(MethodInvocation node) {
+				return super.visit(node);
+			}
+			public boolean visit(ClassInstanceCreation node) {
+				String name = node.getType().toString();
+				if (type.equals(name)) references++;	
+				return false; // do not continue 
+			}
+			public boolean visit(AnnotationTypeDeclaration node) {
+				String name = node.getName().getFullyQualifiedName();
+				if (type.equals(name)) declarations++;					
+				return false; // do not continue 
+			}
+			public boolean visit(EnumDeclaration node) {
+				String name = node.getName().getFullyQualifiedName();
+				if (type.equals(name)) declarations++;					
+				ITypeBinding e = node.resolveBinding();
+				if (e.getInterfaces() != null) {
+					ITypeBinding[] interfaces = e.getInterfaces();
+					for (ITypeBinding i : interfaces) {
+						if (type.equals(i.getQualifiedName())) references++;
+					}
+				}
+				return false; // do not continue 
+			}
+		});
 	}
 	
 	public int getDec() {
