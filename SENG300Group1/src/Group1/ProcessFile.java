@@ -49,259 +49,38 @@ public class ProcessFile {
 
 	private String type = "default";
 	private String path = "default";
+	private boolean hasPackage = false;
 	private int declarations = 0;
 	private int references = 0;
 	
 	// FileParserConstructor
-	public ProcessFile(String pathName, String type) {
+	public ProcessFile(String pathName, String type, boolean hasPackage) {
 		this.path = pathName;
 		this.type = type;
+		this.hasPackage = hasPackage;
 	}
 	
 	public void parseFile() throws IOException {
-		File absPath = new File(path); //converts path to abstract path
-		
-		if (!absPath.isDirectory()) {
-			throw new IOException();
+		File home = new File(path);
+		File[] files = null;
+		try {
+			files = home.listFiles(); 
+			if (files == null) throw new NullPointerException();
+		} catch (NullPointerException e) {
+			System.out.println("'" + home + "' does not exist.");
+			System.exit(0);  
 		}
-		File[] file = absPath.listFiles();
-		String filePath = "";
-		
-		for (File fi : file) { //loop through file
-			filePath = fi.getAbsolutePath();
-			if (fi.isFile()) {
+
+		for (File f: files) {
+			String currentFilePath = f.getAbsolutePath();
+			if (f.isFile()) {
 				Parser parser = new Parser();
-				parser.parseIt(fileToString(path),getType());
+				parser.parseIt(fileToString(currentFilePath), getType(), hasPackage);
 				declarations = parser.getDec();
 				references = parser.getRef();
-			}else {
-				throw new IOException();
 			}
-		}
-		
-		
+		} 		
 	}
-	
-	public String getType() {
-		return type;
-	}
-/*
-	private void parseIt(String path) {
-		// TODO Auto-generated method stub
-		/*
-		ASTParser parser = ASTParser.newParser(AST.JLS3);					//Creating the AST with the given string.
-		parser.setSource(path.toCharArray());
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		parser.setResolveBindings(true);
-		
-		ASTNode node = parser.createAST(null);	//node to look through
-		
-		switch (type) {
-		case "annotation":
-			doAnnotation(node);
-			break;
-		case "class":
-			doClass(node);
-			break;
-		case "enum":
-			doEnum(node);
-			break;
-		case "interface":
-			doInterface(node);
-			break;
-		default: // if not valid type, program ends
-			System.out.println("Invalid Type!");
-			System.exit(0);
-		}
-///////////////////////////////////////////////////////////////////////////////////////////////////////		
-		Map map = JavaCore.getOptions();
-		map.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_5);
-		map.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_5);
-		map.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_5);
-
-
-		  
-
-		  
-			ASTParser parser = ASTParser.newParser(AST.JLS8);
-			parser.setCompilerOptions(map);
-			parser.setSource(path.toCharArray());
-			parser.setKind(ASTParser.K_COMPILATION_UNIT);
-			parser.setResolveBindings(true);
-			parser.setEnvironment(null, null, null, true);
-			parser.setUnitName("doesThisMatter.java");
-			
-
-			
-			
-			 
-			 
-			final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
-	 
-			cu.accept(new ASTVisitor() {
-	 
-
-				public boolean visit(TypeDeclaration node) {
-					String name = node.getName().getFullyQualifiedName();
-					
-					if (type.equals(name)) declarations++;
-			
-					if (node.getSuperclassType() != null) {
-						if (type.equals(node.getSuperclassType().toString())) references++;						
-					}
-					
-					ITypeBinding nodeBinding = node.resolveBinding();
-					if (nodeBinding.getInterfaces() != null) {
-						ITypeBinding[] interfaces = nodeBinding.getInterfaces();
-						for (ITypeBinding i : interfaces) {
-							if (type.equals(i.getQualifiedName())) references++;							
-						}
-					}
-					
-					return super.visit(node); 
-				}
-				
-
-				
-				
-				public boolean visit(VariableDeclarationFragment node) {
-					
-					String name = node.resolveBinding().getType().getName();
-					if (type.equals(name)) references++;
-					return super.visit(node);
-				}
-				
-				
-
-				
-				public boolean visit(MethodDeclaration node) {
-				
-					for (Object o : node.parameters()) {
-						SingleVariableDeclaration svd = (SingleVariableDeclaration) o;
-						if (type.equals(svd.getType().toString())) references++;
-					}
-					
-					return super.visit(node);
-				}
-				
-				public boolean visit(MethodInvocation node) {
-					
-					
-					return super.visit(node);
-				}
-				
-		
-				public boolean visit(ClassInstanceCreation node) {
-					String name = node.getType().toString();
-					if (type.equals(name)) references++;	
-					return false; // do not continue 
-			}
-				
-
-				
-				
-				public boolean visit(AnnotationTypeDeclaration node) {
-					String name = node.getName().getFullyQualifiedName();
-					if (type.equals(name)) declarations++;					
-					return false; // do not continue 
-				}
-				
-				
-				public boolean visit(EnumDeclaration node) {
-					String name = node.getName().getFullyQualifiedName();
-					if (type.equals(name)) declarations++;					
-					ITypeBinding e = node.resolveBinding();
-					if (e.getInterfaces() != null) {
-						ITypeBinding[] interfaces = e.getInterfaces();
-						for (ITypeBinding i : interfaces) {
-							if (type.equals(i.getQualifiedName())) references++;
-							//if (DEBUG) System.out.println("Implements Reference: " + i.getName());
-						}
-					}
-					
-
-					
-					return false; // do not continue 
-				}
-				
-
-
-			});
-		
-		
-	}
-///////////////////////////////////////////////////////////////////////////////////////////
-	private void doInterface(ASTNode node) {
-		// TODO Auto-generated method stub
-		countIntDec(node);
-		countIntRef(node);
-	}
-
-	private void doEnum(ASTNode node) {
-		// TODO Auto-generated method stub
-		countEnumClassDec(node);
-		countEnumClassRef(node);
-	}
-
-	private void doClass(ASTNode node) {
-		// TODO Auto-generated method stub
-		countClassDec(node);
-		countClassRef(node);
-	}
-
-	private void doAnnotation(ASTNode node) {
-		// TODO Auto-generated method stub
-		countAnnotDec(node);
-		countAnnotRef(node);
-	}
-
-	private void countIntRef(ASTNode node) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void countIntDec(ASTNode node) {
-		// TODO Auto-generated method stub
-		// want to instantiate ASTVisistor
-	}
-
-	private void countEnumClassRef(ASTNode node) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void countEnumClassDec(ASTNode node) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void countClassRef(ASTNode node) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void countClassDec(ASTNode node) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void countAnnotRef(ASTNode node) {
-		// TODO Auto-generated method stub
-		//Types type = new Types();
-		Reference ref = new Reference("annot");
-		//ref.toDo("annot");
-		//type.visitAnnotRef(node);
-		node.accept(ref);
-		references = type.getAnnotRef();
-	}
-
-	private void countAnnotDec(ASTNode node) {
-		// TODO Auto-generated method stub
-		Types type = new Types();
-		node.accept(type);
-		references = type.getAnnotDec();
-		
-	}*/
 
 	private String fileToString(String filePathToString) throws IOException{
 		// TODO Auto-generated method stub
@@ -330,5 +109,8 @@ public class ProcessFile {
 		return declarations;
 	}
 	
+	public String getType() {
+		return type;
+	}
+	
 }
-
