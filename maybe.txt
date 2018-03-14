@@ -1,0 +1,211 @@
+public class Maybe {
+        public void parseDirectory(String filePath) throws IOException {
+
+			  File directory = new File(filePath);
+			  File[] files = null;
+			  
+			  try {
+				  files = directory.listFiles(); 
+				  if (files == null) throw new NullPointerException();
+			  } catch (NullPointerException e) {
+				  System.out.println("Directory '" + directory +"' does not exist.");
+				  if (DEBUG) e.printStackTrace();
+				  System.exit(0);  
+			  }
+
+			  for (File i: files) {
+				  String currentFilePath = i.getAbsolutePath();
+				  if (i.isFile()) parse(readFile(currentFilePath));
+			  	} 
+	  }
+    
+    
+    
+    public boolean visit(TypeDeclaration node) {
+					String name = node.getName().getFullyQualifiedName();
+					
+					ITypeBinding nodeBinding = node.resolveBinding();
+					if (containsPackage) {
+						if (nodeBinding.getPackage() != null) {
+							name = nodeBinding.getPackage().getName() + "." + name;
+						}
+					}
+						
+					if (javaType.equals(name)) declerationCount++;
+					if (DEBUG) System.out.println("Declaration: " +name);
+			
+
+					if (node.getSuperclassType() != null) {
+						
+						if (containsPackage) {
+							ITypeBinding superNodeBinding = node.getSuperclassType().resolveBinding();
+							if (superNodeBinding.getPackage() != null) {
+								String superClassName = superNodeBinding.getPackage().getName() + "." + node.getSuperclassType();
+								if (javaType.equals(superClassName)) referenceCount++;
+							}
+						} else {
+							if (javaType.equals(node.getSuperclassType().toString())) referenceCount++;
+						}
+						if (DEBUG) System.out.println("This class extends " + node.getSuperclassType());
+						
+					}
+
+		
+					if (nodeBinding.getInterfaces() != null) {
+						ITypeBinding[] interfaces = nodeBinding.getInterfaces();
+						if (containsPackage) {
+							for (ITypeBinding i : interfaces) {
+								if (javaType.equals(i.getQualifiedName())) referenceCount++;
+								if (DEBUG) System.out.println("implements Reference: " + i.getQualifiedName());
+							}
+						} else {
+							for (ITypeBinding i : interfaces) {
+								if (javaType.equals(i.getName())) referenceCount++;
+								if (DEBUG) System.out.println("implements Reference: " + i.getName());
+							}
+						}
+					}
+					
+					
+					return super.visit(node); 
+				}
+				
+
+				
+				
+				public boolean visit(VariableDeclarationFragment node) {
+					String name;
+					if (containsPackage) {
+						name = node.resolveBinding().getType().getQualifiedName();
+					} else {
+						name = node.resolveBinding().getType().getName();
+					}
+			
+					if (javaType.equals(name)) referenceCount++;
+					if (DEBUG) System.out.println("Variable Reference: " + name);
+	
+					return super.visit(node);
+				}
+				
+				
+
+				
+				public boolean visit(MethodDeclaration node) {
+					String name;
+					
+//					if (node.isConstructor()) {
+//						if (javaType.equals(node.getName().getFullyQualifiedName())) referenceCount++;
+//						if (DEBUG) System.out.println("Reference: " + node.getName().getFullyQualifiedName());
+//					}
+					IMethodBinding imb = node.resolveBinding();
+					if (containsPackage) {
+						name = imb.getReturnType().getQualifiedName();
+						if (javaType.equals(name)) referenceCount ++;
+						if (DEBUG) System.out.println("Method Return Type Reference: " + name);
+					}
+					else {
+						name = imb.getReturnType().toString();
+						if (javaType.equals(name)) referenceCount ++;
+						if (DEBUG) System.out.println("Method Return Type Reference: " + name);
+					}
+//				
+					for (Object o : node.parameters()) {
+						SingleVariableDeclaration svd = (SingleVariableDeclaration) o;
+						
+						
+						if (containsPackage) {
+							IVariableBinding nodeBinding = svd.resolveBinding();
+							name = nodeBinding.getType().getQualifiedName();
+							if (javaType.equals(name)) referenceCount++;
+							if (DEBUG) System.out.println("Parameter Variable Reference: " + name);
+							
+						} else {
+							name = svd.getType().toString();
+							if (javaType.equals(name)) referenceCount++;
+							if (DEBUG) System.out.println("Parameter Variable Reference: " + name);						
+						}
+					}
+					
+					return super.visit(node);
+				}
+				
+				public boolean visit(MethodInvocation node) {
+
+					
+					return super.visit(node);
+				}
+				
+		
+				public boolean visit(ClassInstanceCreation node) {
+					String name;
+				
+					if (containsPackage) {
+						name = node.resolveTypeBinding().getQualifiedName();			
+					} else {
+						name = node.getType().toString();
+					}
+					
+					if (javaType.equals(name)) referenceCount++;
+					if (DEBUG) System.out.println("Instance Variable Reference: " + name);
+					
+
+					return false; // do not continue 
+			}
+				
+
+				
+				public boolean visit(AnnotationTypeDeclaration node) {
+					String name;
+					
+					if (containsPackage) {
+						name = node.resolveBinding().getQualifiedName();		
+					} else {
+						name = node.getName().getFullyQualifiedName();
+					}
+					
+					if (javaType.equals(name)) declerationCount++;
+					
+					if (DEBUG) System.out.println("Declaration: " + name);
+					
+					return false; // do not continue 
+				}
+				
+				
+				public boolean visit(EnumDeclaration node) {
+					String name;
+					if (containsPackage) {
+						name = node.resolveBinding().getQualifiedName();		
+					} else {
+						name = node.getName().getFullyQualifiedName();
+					}
+					
+					if (javaType.equals(name)) declerationCount++;
+					if (DEBUG) System.out.println("Declaration: " + name);
+
+					
+					ITypeBinding nodeBinding = node.resolveBinding();
+					if (nodeBinding.getInterfaces() != null) {
+						ITypeBinding[] interfaces = nodeBinding.getInterfaces();
+						if (containsPackage) {
+							for (ITypeBinding i : interfaces) {
+								if (javaType.equals(i.getQualifiedName())) referenceCount++;
+								if (DEBUG) System.out.println("implements Reference: " + i.getQualifiedName());
+							}
+						} else {
+							for (ITypeBinding i : interfaces) {
+								if (javaType.equals(i.getName())) referenceCount++;
+								if (DEBUG) System.out.println("implements Reference: " + i.getName());
+							}
+						}
+					}
+
+					return false; // do not continue 
+				}
+				
+				
+
+
+
+			});
+    
+}
